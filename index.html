@@ -86,7 +86,7 @@
             justify-content: space-around;
             align-items: center;
             z-index: 1000;
-            padding-bottom: env(safe-area-inset-bottom); /* Поддержка челок iPhone */
+            padding-bottom: env(safe-area-inset-bottom);
         }
 
         .mobile-nav-item {
@@ -244,15 +244,15 @@
             }
 
             .sidebar {
-                display: none; /* Прячем боковое меню на смартфонах */
+                display: none;
             }
 
             .mobile-nav {
-                display: flex; /* Показываем нижний бар */
+                display: flex;
             }
 
             .main-content {
-                padding-bottom: 75px; /* Защита от перекрытия меню контентом */
+                padding-bottom: 75px;
             }
 
             header {
@@ -328,3 +328,147 @@
             <!-- СТРАНИЦА 2: МОНИТОРИНГ -->
             <div id="page-monitor" class="page">
                 <div class="card">
+                    <h3 style="font-size: 18px; margin-bottom: 8px;">Синхронизация остатков и прайсов</h3>
+            <!-- СТРАНИЦА 2: МОНИТОРИНГ -->
+            <div id="page-monitor" class="page">
+                <div class="card">
+                    <h3 style="font-size: 18px; margin-bottom: 8px;">Синхронизация остатков и прайсов</h3>
+                    <p style="color: var(--text-light); font-size: 13px; margin-bottom: 16px;">Система каждый час проверяет базы данных поставщиков.</p>
+                    
+                    <button class="btn" onclick="startSyncSimulation()">Запустить принудительную сверку</button>
+                    
+                    <div class="logger" id="log-window">
+                        [Система] Ожидание запуска синхронизации...
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Товар</th>
+                                <th>Поставщик</th>
+                                <th>Наша цена</th>
+                                <th>Склад</th>
+                                <th>Статус</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>SKU-8821</strong></td>
+                                <td>800 ₽</td>
+                                <td id="table-price">1000 ₽</td>
+                                <td id="table-stock">14 шт.</td>
+                                <td><span class="status-badge">Синхронно</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- СТРАНИЦА 3: АВТОВЫКУП -->
+            <div id="page-orders" class="page">
+                <div class="card">
+                    <h3 style="font-size: 18px; margin-bottom: 8px;">Модуль автовыкупа (Fulfillment)</h3>
+                    <p style="color: var(--text-light); font-size: 13px; margin-bottom: 16px;">ClickDS выкупает заказы у производителя полностью автоматически.</p>
+                    
+                    <div style="background: #eff6ff; padding: 14px; border-radius: 8px; border-left: 4px solid #3b82f6; margin-bottom: 20px; font-size: 14px;">
+                        <strong>Баланс аккаунта ClickDS:</strong> 12 500 ₽
+                    </div>
+
+                    <h3 style="font-size: 16px; margin-bottom: 10px;">Последние операции</h3>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Товар</th>
+                                    <th>Выкуп</th>
+                                    <th>Трек-номер</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>#9921</td>
+                                    <td>ИИ-Массажер</td>
+                                    <td><span class="status-badge" style="background:#dbeafe; color:#1e40af;">Выкуплено ИИ</span></td>
+                                    <td><code style="background:#f1f5f9; padding:2px 6px; font-size:12px;">RU8829102X</code></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- СКРИПТЫ И ЗАКРЫВАЮЩИЕ КОДЫ -->
+    <script>
+        function switchPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.getElementById('page-' + pageId).classList.add('active');
+            
+            document.querySelectorAll('.nav-item, .mobile-nav-item').forEach(item => {
+                if(item.getAttribute('data-target') === pageId) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+            
+            const titles = {
+                'importer': 'Импорт новых товаров',
+                'monitor': 'Мониторинг цен и остатков',
+                'orders': 'Панель автовыкупа заказов'
+            };
+            document.getElementById('page-title').innerText = titles[pageId];
+        }
+
+        function simulateImport(e) {
+            const urlInput = document.getElementById('supplier-url').value;
+            if(!urlInput) {
+                alert('Пожалуйста, введите любую ссылку для симуляции!');
+                return;
+            }
+            
+            const btn = e.target;
+            btn.innerText = 'ИИ анализирует и парсит...';
+            btn.style.opacity = '0.6';
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                btn.innerText = 'Загрузить и ИИ-оптимизировать';
+                btn.style.opacity = '1';
+                btn.disabled = false;
+                document.getElementById('ai-result-card').style.display = 'block';
+            }, 1200);
+        }
+
+        function startSyncSimulation() {
+            const logger = document.getElementById('log-window');
+            logger.innerHTML = '';
+            
+            const logs = [
+                '[07:14:02] Запуск проверки связок...',
+                '[07:14:03] Подключение к фабрике...',
+                '[07:14:04] Изменение цены поставщика: 800 ₽ -> 850 ₽',
+                '[07:14:05] Перерасчет цены (+ наценка 25%)...',
+                '[07:14:06] API маркетплейса: Успешно обновлено!'
+            ];
+
+            logs.forEach((text, index) => {
+                setTimeout(() => {
+                    logger.innerHTML += text + '<br>';
+                    logger.scrollTop = logger.scrollHeight;
+                    
+                    if(index === logs.length - 1) {
+                        document.getElementById('table-price').innerText = '1062 ₽';
+                        document.getElementById('table-stock').innerText = '12 шт.';
+                        document.getElementById('table-price').style.color = 'var(--success)';
+                        document.getElementById('table-price').style.fontWeight = 'bold';
+                    }
+                }, index * 600);
+            });
+        }
+    </script>
+</body>
+</html>
