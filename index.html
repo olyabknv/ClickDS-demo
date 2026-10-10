@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ClickDS - Панель управления селлера</title>
+    <style>
+        :root {
+            --primary: #00cbc6; /* Фирменный бирюзовый цвет ClickDS */
+            --bg-dark: #1e293b;
+            --sidebar-bg: #0f172a;
+            --panel-bg: #ffffff;
+            --text-main: #334155;
+            --text-light: #94a3b8;
+            --success: #10b981;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            display: flex;
+            background: #f8fafc;
+            color: var(--text-main);
+            height: 100vh;
+            overflow: hidden;
+            flex-direction: row;
+        }
+
+        /* БОКОВАЯ ПАНЕЛЬ (ДЛЯ ПК) */
+        .sidebar {
+            width: 260px;
+            background: var(--sidebar-bg);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            flex-shrink: 0;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .slogan {
+            font-size: 11px;
+            color: var(--text-light);
+            margin-bottom: 40px;
+        }
+
+        .nav-item {
+            padding: 14px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 8px;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: rgba(0, 203, 198, 0.15);
+            color: var(--primary);
+        }
+
+        /* НИЖНЕЕ МЕНЮ (ДЛЯ СМАРТФОНОВ) */
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 65px;
+            background: var(--sidebar-bg);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            justify-content: space-around;
+            align-items: center;
+            z-index: 1000;
+            padding-bottom: env(safe-area-inset-bottom); /* Поддержка челок iPhone */
+        }
+
+        .mobile-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-light);
+            font-size: 11px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 500;
+            flex: 1;
+            justify-content: center;
+            height: 100%;
+        }
+
+        .mobile-nav-item .icon {
+            font-size: 20px;
+            margin-bottom: 2px;
+        }
+
+        .mobile-nav-item.active {
+            color: var(--primary);
+        }
+
+        /* ГЛАВНЫЙ КОНТЕНТ */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            padding-bottom: 0;
+        }
+
+        header {
+            background: white;
+            padding: 20px 40px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+        }
+
+        .content-body {
+            padding: 40px;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* КАРТОЧКИ И ФОРМЫ */
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.2s;
+            width: 100%;
+            font-size: 15px;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary);
+        }
+
+        /* ТАБЛИЦЫ */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+            min-width: 500px;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 14px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background: #f1f5f9;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            background: #dcfce7;
+            color: var(--success);
+        }
+
+        .logger {
+            background: #0f172a;
+            color: #38bdf8;
+            padding: 16px;
+            border-radius: 8px;
+            font-family: monospace;
+            height: 150px;
+            overflow-y: auto;
+            margin-top: 16px;
+            font-size: 13px;
+        }
+
+        /* АДАПТИВНОСТЬ ПОД МОБИЛЬНЫЕ УСТРОЙСТВА */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                display: none; /* Прячем боковое меню на смартфонах */
+            }
+
+            .mobile-nav {
+                display: flex; /* Показываем нижний бар */
+            }
+
+            .main-content {
+                padding-bottom: 75px; /* Защита от перекрытия меню контентом */
+            }
+
+            header {
+                padding: 15px 20px;
+            }
+
+            .content-body {
+                padding: 20px 15px;
+            }
+
+            .card {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- БОКОВОЕ МЕНЮ (ПК ВЕРСИЯ) -->
+    <div class="sidebar">
+        <div class="logo">⚡ ClickDS</div>
+        <div class="slogan">Мы работаем, ты зарабатываешь</div>
+        
+        <div class="nav-item active" data-target="importer" onclick="switchPage('importer')">📦 Импорт товаров</div>
+        <div class="nav-item" data-target="monitor" onclick="switchPage('monitor')">🔄 Мониторинг & Цены</div>
+        <div class="nav-item" data-target="orders" onclick="switchPage('orders')">🛒 Автовыкуп (Fulfillment)</div>
+    </div>
+
+    <!-- НИЖНЕЕ МЕНЮ (МОБИЛЬНАЯ ВЕРСИЯ) -->
+    <div class="mobile-nav">
+        <div class="mobile-nav-item active" data-target="importer" onclick="switchPage('importer')">
+            <span class="icon">📦</span>
+            <span>Импорт</span>
+        </div>
+        <div class="mobile-nav-item" data-target="monitor" onclick="switchPage('monitor')">
+            <span class="icon">🔄</span>
+            <span>Контроль</span>
+        </div>
+        <div class="mobile-nav-item" data-target="orders" onclick="switchPage('orders')">
+            <span class="icon">🛒</span>
+            <span>Выкуп</span>
+        </div>
+    </div>
+
+    <!-- ОСНОВНОЙ КОНТЕНТ -->
+    <div class="main-content">
+        <header>
+            <h2 id="page-title" style="font-size: 20px;">Импорт новых товаров</h2>
+            <div class="user-profile" style="font-size: 14px;">💼 Focus_Seller</div>
+        </header>
+
+        <div class="content-body">
+            
+            <!-- СТРАНИЦА 1: ИМПОРТ -->
+            <div id="page-importer" class="page active">
+                <div class="card">
+                    <h3 style="font-size: 18px; margin-bottom: 8px;">Вставьте ссылку на поставщика</h3>
+                    <p style="color: var(--text-light); margin-bottom: 16px; font-size: 13px;">Поддерживаются ссылки на фабрики и оптовые прайсы.</p>
+                    <input type="text" id="supplier-url" placeholder="https://supplier-factory.ru">
+                    <button class="btn" onclick="simulateImport(event)">Загрузить и ИИ-оптимизировать</button>
+                </div>
+
+                <div class="card" id="ai-result-card" style="display: none; border-left: 4px solid var(--primary);">
+                    <h3 style="color: var(--primary); margin-bottom: 12px; font-size: 17px;">✨ Результат работы ClickDS AI</h3>
+                    <p style="font-size: 14px;"><strong>Исходное название:</strong> <br><span id="old-title" style="color: #64748b;">Массажер для шеи беспроводной обычный</span></p>
+                    <p style="margin-top: 10px; font-size: 14px;"><strong>Оптимизировано для SEO (Ozon/WB):</strong> <br><span style="color: var(--success); font-weight: 600;" id="new-title">Умный ИИ-массажер для шеи и плеч импульсный (с подтвержденным высоким спросом)</span></p>
+                    <div style="margin-top: 16px; background: #f8fafc; padding: 12px; border-radius: 6px; font-size: 13px;">
+                        📌 Автоматически просчитана наценка +25%. Товар готов к выгрузке!
+                    </div>
+                </div>
+            </div>
+
+            <!-- СТРАНИЦА 2: МОНИТОРИНГ -->
+            <div id="page-monitor" class="page">
+                <div class="card">
